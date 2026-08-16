@@ -1,0 +1,18 @@
+{
+  "name": "screen",
+  "permissions": {
+    "android": ["android.permission.WAKE_LOCK"],
+    "ios": {}
+  },
+  "methods": [
+    "getBrightness",
+    "setBrightness",
+    "keepAwake",
+    "allowSleep",
+    "getOrientation",
+    "lockOrientation",
+    "unlockOrientation"
+  ],
+  "hooks": [],
+  "events": []
+}
