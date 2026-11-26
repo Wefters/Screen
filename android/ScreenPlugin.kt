@@ -9,12 +9,18 @@ import android.view.WindowManager
 import androidx.fragment.app.FragmentActivity
 import org.json.JSONObject
 
+/** Screen brightness, keep-awake and orientation control for the current activity. */
 class ScreenPlugin(context: Context, dispatcher: BridgeDispatcher) :
         WefterPlugin(context, dispatcher) {
 
     private val activity: FragmentActivity?
         get() = context as? FragmentActivity
 
+    /**
+     * The window's brightness from 0 to 1, falling back to the system brightness when the window does not
+     * set
+     * one.
+     */
     @WefterMethod
     fun getBrightness(payload: JSONObject, callback: (Result<Any>) -> Unit) {
         val act = activity
@@ -42,6 +48,7 @@ class ScreenPlugin(context: Context, dispatcher: BridgeDispatcher) :
         }
     }
 
+    /** Sets the window's brightness, clamped to 0–1. Only affects this app. */
     @WefterMethod
     fun setBrightness(payload: JSONObject, callback: (Result<Any>) -> Unit) {
         val act = activity
@@ -69,6 +76,7 @@ class ScreenPlugin(context: Context, dispatcher: BridgeDispatcher) :
         }
     }
 
+    /** Keeps the screen on while the activity is visible. */
     @WefterMethod
     fun keepAwake(payload: JSONObject, callback: (Result<Any>) -> Unit) {
         val act = activity
@@ -87,6 +95,7 @@ class ScreenPlugin(context: Context, dispatcher: BridgeDispatcher) :
         }
     }
 
+    /** Lets the screen turn off again. */
     @WefterMethod
     fun allowSleep(payload: JSONObject, callback: (Result<Any>) -> Unit) {
         val act = activity
@@ -105,6 +114,7 @@ class ScreenPlugin(context: Context, dispatcher: BridgeDispatcher) :
         }
     }
 
+    /** The current orientation. */
     @WefterMethod
     fun getOrientation(payload: JSONObject, callback: (Result<Any>) -> Unit) {
         val act = activity
@@ -136,6 +146,7 @@ class ScreenPlugin(context: Context, dispatcher: BridgeDispatcher) :
         }
     }
 
+    /** Locks the activity to an orientation. */
     @WefterMethod
     fun lockOrientation(payload: JSONObject, callback: (Result<Any>) -> Unit) {
         val act = activity
@@ -165,6 +176,7 @@ class ScreenPlugin(context: Context, dispatcher: BridgeDispatcher) :
         }
     }
 
+    /** Lets the activity rotate freely again. */
     @WefterMethod
     fun unlockOrientation(payload: JSONObject, callback: (Result<Any>) -> Unit) {
         val act = activity

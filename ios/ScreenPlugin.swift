@@ -1,7 +1,9 @@
 import UIKit
 
+/// Screen brightness, idle timer and orientation control.
 final class ScreenPlugin: WefterPlugin {
 
+    /// The current screen brightness from 0 to 1.
     // @WefterMethod
     func getBrightness(payload: [String: Any], callback: @escaping (Result<Any, Error>) -> Void) throws {
         DispatchQueue.main.async {
@@ -10,6 +12,7 @@ final class ScreenPlugin: WefterPlugin {
         }
     }
 
+    /// Sets the screen brightness, clamped to 0–1.
     // @WefterMethod
     func setBrightness(payload: [String: Any], callback: @escaping (Result<Any, Error>) -> Void) throws {
         guard let brightnessNum = payload["brightness"] as? NSNumber else {
@@ -23,6 +26,7 @@ final class ScreenPlugin: WefterPlugin {
         }
     }
 
+    /// Disables the idle timer so the screen stays on.
     // @WefterMethod
     func keepAwake(payload: [String: Any], callback: @escaping (Result<Any, Error>) -> Void) throws {
         DispatchQueue.main.async {
@@ -31,6 +35,7 @@ final class ScreenPlugin: WefterPlugin {
         }
     }
 
+    /// Re-enables the idle timer.
     // @WefterMethod
     func allowSleep(payload: [String: Any], callback: @escaping (Result<Any, Error>) -> Void) throws {
         DispatchQueue.main.async {
@@ -39,6 +44,7 @@ final class ScreenPlugin: WefterPlugin {
         }
     }
 
+    /// The current interface orientation.
     // @WefterMethod
     func getOrientation(payload: [String: Any], callback: @escaping (Result<Any, Error>) -> Void) throws {
         DispatchQueue.main.async {
@@ -62,6 +68,7 @@ final class ScreenPlugin: WefterPlugin {
         }
     }
 
+    /// Rotates the interface to an orientation by setting the device orientation.
     // @WefterMethod
     func lockOrientation(payload: [String: Any], callback: @escaping (Result<Any, Error>) -> Void) throws {
         let orientationStr = (payload["orientation"] as? String ?? "portrait").lowercased()
@@ -84,6 +91,7 @@ final class ScreenPlugin: WefterPlugin {
         }
     }
 
+    /// Lets the interface follow the device orientation again.
     // @WefterMethod
     func unlockOrientation(payload: [String: Any], callback: @escaping (Result<Any, Error>) -> Void) throws {
         DispatchQueue.main.async {
