@@ -8,7 +8,7 @@ Official Wefter plugin for controlling screen brightness, orientation locks, and
 - Prevent the device display from dimming or sleeping during long-running tasks.
 - Restore standard system display timeout behavior.
 - Query active screen orientation and apply portrait or landscape locks.
-- Unlock orientation to restore automatic sensor-driven rotation.
+- Unlock orientation to return to the app's own orientation (`orientation` in `wefter.config.json`: portrait on phones by default).
 
 ## Installation and setup
 
@@ -77,7 +77,7 @@ await Screen.lockOrientation({ orientation: "landscape" });
 // Lock to portrait
 await Screen.lockOrientation({ orientation: "portrait" });
 
-// Unlock orientation to re-enable sensor auto-rotation
+// Unlock: back to the app's own orientation (portrait by default; set "orientation": "any" to rotate freely)
 await Screen.unlockOrientation();
 ```
 

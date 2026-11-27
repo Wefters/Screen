@@ -1,7 +1,9 @@
 package dev.wefter.bridge
 
+import android.app.Activity
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.provider.Settings
 import android.view.Surface
@@ -176,7 +178,10 @@ class ScreenPlugin(context: Context, dispatcher: BridgeDispatcher) :
         }
     }
 
-    /** Lets the activity rotate freely again. */
+    /**
+     * Returns the activity to the app's own orientation (`orientation` in `wefter.config.json`: portrait by
+     * default), as `screen.orientation.unlock()` does in a browser.
+     */
     @WefterMethod
     fun unlockOrientation(payload: JSONObject, callback: (Result<Any>) -> Unit) {
         val act = activity
@@ -187,11 +192,20 @@ class ScreenPlugin(context: Context, dispatcher: BridgeDispatcher) :
 
         act.runOnUiThread {
             try {
-                act.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                act.requestedOrientation = appOrientation(act)
                 resolve(callback, JSONObject().put("success", true))
             } catch (e: Exception) {
                 reject(callback, "UNLOCK_FAILED", e.message ?: "Could not unlock orientation.")
             }
         }
     }
+
+    /** The orientation the app's manifest gives the activity. */
+    private fun appOrientation(act: Activity): Int =
+            try {
+                @Suppress("DEPRECATION")
+                act.packageManager.getActivityInfo(act.componentName, 0).screenOrientation
+            } catch (_: PackageManager.NameNotFoundException) {
+                ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            }
 }

@@ -54,7 +54,7 @@ export const Screen = definePlugin<{
   getOrientation: () => Promise<GetOrientationResult>;
   /** Locks the screen to an orientation. */
   lockOrientation: (options: LockOrientationOptions) => Promise<ScreenOperationResult>;
-  /** Lets the screen rotate freely again. */
+  /** Returns the screen to the app's own orientation (`orientation` in `wefter.config.json`). */
   unlockOrientation: () => Promise<ScreenOperationResult>;
 }>("screen", {
   getBrightness: true,
