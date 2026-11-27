@@ -72,7 +72,7 @@ console.log("Current orientation:", type);
 // "portrait", "portrait-primary", "landscape", "landscape-primary", etc.
 
 // Lock to landscape
-await Screen.lockOrientation({ orientation: "landscape" });
+await Screen.lockOrientation({ orientation: "landscape" }); // portrait, landscape, their -primary/-secondary forms, or any
 
 // Lock to portrait
 await Screen.lockOrientation({ orientation: "portrait" });
@@ -107,13 +107,13 @@ export async function exitMediaPlayback() {
 
 - **Brightness**: Modifies `WindowManager.LayoutParams.screenBrightness` on the current window.
 - **Keep awake**: Toggles the `WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON` flag on the window decor view.
-- **Orientation**: Sets `requestedOrientation` on `MainActivity` using `ActivityInfo.SCREEN_ORIENTATION_*` constants.
+- **Orientation**: Uses the shell's `OrientationLock`, which sets `requestedOrientation`; unlocking returns to the orientation in the app's manifest.
 
 ### iOS
 
 - **Brightness**: Sets `UIScreen.main.brightness`.
 - **Keep awake**: Controls `UIApplication.shared.isIdleTimerDisabled`.
-- **Orientation**: Interacts with `UIViewController.supportedInterfaceOrientations` and requests geometry updates on iOS 16 and later.
+- **Orientation**: Uses the shell's `OrientationLock`, which overrides the app's supported orientations while locked (so a portrait app can lock to landscape) and requests a geometry update.
 
 ## License
 

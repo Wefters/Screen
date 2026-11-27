@@ -1,9 +1,6 @@
 package dev.wefter.bridge
 
-import android.app.Activity
 import android.content.Context
-import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.provider.Settings
 import android.view.Surface
@@ -156,24 +153,20 @@ class ScreenPlugin(context: Context, dispatcher: BridgeDispatcher) :
             reject(callback, "NO_ACTIVITY", "Activity instance is required.")
             return
         }
-
-        val orientationStr = payload.optString("orientation", "portrait").lowercase()
-
-        val requestedOrientation =
-                when (orientationStr) {
-                    "portrait", "portrait-primary" -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                    "portrait-secondary" -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
-                    "landscape", "landscape-primary" -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                    "landscape-secondary" -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-                    else -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                }
-
+        val orientation = payload.optString("orientation", "portrait").lowercase()
+        if (orientation !in OrientationLock.names) {
+            reject(
+                    callback,
+                    "INVALID_ORIENTATION",
+                    "Unknown orientation: $orientation. Valid orientations are: ${OrientationLock.names.sorted().joinToString(", ")}."
+            )
+            return
+        }
         act.runOnUiThread {
-            try {
-                act.requestedOrientation = requestedOrientation
+            if (OrientationLock.lock(orientation)) {
                 resolve(callback, JSONObject().put("success", true))
-            } catch (e: Exception) {
-                reject(callback, "LOCK_FAILED", e.message ?: "Could not lock orientation.")
+            } else {
+                reject(callback, "LOCK_FAILED", "Could not lock orientation.")
             }
         }
     }
@@ -189,23 +182,12 @@ class ScreenPlugin(context: Context, dispatcher: BridgeDispatcher) :
             reject(callback, "NO_ACTIVITY", "Activity instance is required.")
             return
         }
-
         act.runOnUiThread {
-            try {
-                act.requestedOrientation = appOrientation(act)
+            if (OrientationLock.unlock()) {
                 resolve(callback, JSONObject().put("success", true))
-            } catch (e: Exception) {
-                reject(callback, "UNLOCK_FAILED", e.message ?: "Could not unlock orientation.")
+            } else {
+                reject(callback, "UNLOCK_FAILED", "Could not unlock orientation.")
             }
         }
     }
-
-    /** The orientation the app's manifest gives the activity. */
-    private fun appOrientation(act: Activity): Int =
-            try {
-                @Suppress("DEPRECATION")
-                act.packageManager.getActivityInfo(act.componentName, 0).screenOrientation
-            } catch (_: PackageManager.NameNotFoundException) {
-                ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-            }
 }

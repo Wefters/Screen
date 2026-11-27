@@ -68,34 +68,31 @@ final class ScreenPlugin: WefterPlugin {
         }
     }
 
-    /// Rotates the interface to an orientation by setting the device orientation.
+    /// Locks the screen to an orientation (`portrait`, `landscape`, their `-primary`/`-secondary` forms, or
+    /// `any`) and rotates to it, through the shell's ``OrientationLock``.
     // @WefterMethod
     func lockOrientation(payload: [String: Any], callback: @escaping (Result<Any, Error>) -> Void) throws {
-        let orientationStr = (payload["orientation"] as? String ?? "portrait").lowercased()
-        let value: UIInterfaceOrientation
-        switch orientationStr {
-        case "landscape", "landscape-primary":
-            value = .landscapeLeft
-        case "landscape-secondary":
-            value = .landscapeRight
-        case "portrait-secondary":
-            value = .portraitUpsideDown
-        default:
-            value = .portrait
+        let orientation = (payload["orientation"] as? String ?? "portrait").lowercased()
+        guard OrientationLock.names.contains(orientation) else {
+            reject(
+                callback,
+                code: "INVALID_ORIENTATION",
+                message: "Unknown orientation: \(orientation). Valid orientations are: \(OrientationLock.names.sorted().joined(separator: ", "))."
+            )
+            return
         }
-
         DispatchQueue.main.async {
-            UIDevice.current.setValue(value.rawValue, forKey: "orientation")
-            UIViewController.attemptRotationToDeviceOrientation()
+            OrientationLock.shared.lock(orientation)
             self.resolve(callback, data: ["success": true])
         }
     }
 
-    /// Lets the interface follow the device orientation again.
+    /// Returns to the app's own orientation (`orientation` in `wefter.config.json`: portrait on phones by
+    /// default), as `screen.orientation.unlock()` does in a browser.
     // @WefterMethod
     func unlockOrientation(payload: [String: Any], callback: @escaping (Result<Any, Error>) -> Void) throws {
         DispatchQueue.main.async {
-            UIViewController.attemptRotationToDeviceOrientation()
+            OrientationLock.shared.unlock()
             self.resolve(callback, data: ["success": true])
         }
     }
