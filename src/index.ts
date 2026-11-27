@@ -30,9 +30,15 @@ export interface GetOrientationResult {
   type: OrientationType;
 }
 
+/**
+ * An orientation to lock to: `portrait` or `landscape` (either way up), one exact way up (`-primary`,
+ * `-secondary`), or `any`.
+ */
+export type LockableOrientation = Exclude<OrientationType, "unknown"> | "any";
+
 /** The orientation to lock to. */
 export interface LockOrientationOptions {
-  orientation: OrientationType;
+  orientation: LockableOrientation;
 }
 
 /** Returned by successful changes. */
